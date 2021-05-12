@@ -12,16 +12,16 @@ def throws(f,args:tuple=tuple())->None:
 class nThread:
 	def __init__(
 		self,
-		n:int=0,
+		n:int=16,
 		waits:int=0,
 		f=None,
 		args:list=None,
-		fast:bool=False
+		fast:bool=False,
 	):
 		self.__ed=False
 		self.__q=list()
 		
-		self.__n=n if n else (len(args) if fast else 16)
+		self.__n=len(args) if fast else n
 		self.__total=0
 		self.__finish=0
 		
@@ -32,7 +32,7 @@ class nThread:
 			self.join()
 
 	def __repr__(self):
-		return {
+		_d={
 			'classname':'nThread',
 			'waittime':self.__waits,
 			'total':self.__total,
@@ -41,6 +41,7 @@ class nThread:
 			'running':min(self.__n,len(self.__q)),
 			'waiting':len(self.__q)-self.__n,
 		}
+		return _d
 
 	def __str__(self):
 		return '<class nThread with '+str(self.__n)+' threads>'

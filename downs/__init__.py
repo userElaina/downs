@@ -1,16 +1,16 @@
 '''
 
-`throws` `nThread` `nDown`
+`throws` `nThread` `ext` `nDown`
 
 	>>> throws(f:function,args:tuple)->None
 	>>> nThread(
-		self,
-		n:int=0,
+		n:int=16,
 		waits:float=0,
 		f:function=None,
 		args:list=None,
-		fast:bool=False
+		fast:bool=False,
 		)
+	>>> ext=dict()
 	>>> nDown(
 		url:list,
 		name:list,
@@ -29,4 +29,4 @@
 '''
 
 from downs._thread import throws,nThread
-from downs._down import nDown,ext
+from downs._down import ext,nDown

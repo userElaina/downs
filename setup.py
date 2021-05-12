@@ -6,7 +6,7 @@ def rd(pth):
 
 setuptools.setup(
     name='downs',
-    version='1.0.4',
+    version='1.0.5',
     description='Multithreaded Download Tool.',
     long_description=rd('README.rst'),
     py_modules=['downs'],

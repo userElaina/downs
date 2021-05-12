@@ -25,7 +25,7 @@ class nDown:
 		proxies:dict=None,
 		h1:list=HEADERS,
 		h2:list=HEADERS,
-		fu=None,
+		f=None,
 		stream_size:int=-1,
 		chunk_size:int=1<<20,
 		n:int=30,
@@ -121,7 +121,7 @@ class nDown:
 	def __d1(self,i:int,)->int:
 		url=self.url[i]
 		name=self
-		url=self.fu(url,name) if self.fu else url
+		url=self.f(url,name) if self.f else url
 		
 		if isinstance(self.h1,list):
 			h1=self.h1[i]
