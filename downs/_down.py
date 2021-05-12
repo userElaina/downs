@@ -6,6 +6,12 @@ HEADERS={
 	'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36'
 }
 
+ext={
+	'downloading':'.def_pyd',
+	'error':'.def_err',
+	'finished':'.def_sve',
+}
+
 gh=lambda u,px,h:requests.head(u,proxies=px,headers=h) if px else requests.head(u,headers=h)
 gt=lambda u,px,h:requests.get(u,proxies=px,headers=h) if px else requests.get(u,headers=h)
 gts=lambda u,px,h:requests.get(u,proxies=px,headers=h,stream=True) if px else requests.get(u,headers=h,stream=True)
@@ -23,7 +29,7 @@ class nDown:
 		stream_size:int=-1,
 		chunk_size:int=1<<20,
 		n:int=30,
-		waits:int=0,
+		waits:float=0,
 		print_log:bool=True,
 		test7z:bool=False,
 	):
@@ -46,7 +52,7 @@ class nDown:
 			os.mkdir(self.pth)
 		self.h1=h1
 		self.h2=h2
-		self.fu=fu
+		self.f=f
 		self.proxies=proxies
 		self.stream_size=stream_size
 		self.chunk_size=chunk_size
@@ -54,11 +60,24 @@ class nDown:
 		self.test7z=test7z
 
 		exist=list(os.walk(self.pth))[0][-1]
-		self.l=[i for i in range(self.le) if (self.name[i] not in exist and self.name[i]+'.sve_def' not in exist)]
+		self.l=[i for i in range(self.le) if (self.name[i] not in exist and self.name[i]+ext['finished'] not in exist)]
 		# self.l=[i for i in range(self.le) if self.name[i] not in exist]
 		self.__pt(len(self.l))
 		self.__mian=nThread(n=n,waits=waits)
-	
+
+	def __repr__(self):
+		_d=repr(self.__mian)
+		_d['classname']='nDown',
+		_d['proxies']=self.proxies,
+		return _d
+
+	def __str__(self):
+		return '<class nDown with '+str(self.__mian)+' >'
+
+	def __del__(self):
+		del self.__mian
+		print('del this class nDown')
+
 	def __pt(self,*args):
 		if not self.print_log:
 			return 
@@ -74,7 +93,7 @@ class nDown:
 		
 		name=self.pth+self.name[i]
 		if self.size[i]>=self.stream_size:
-			nm=name+'.pyd_def'
+			nm=name+ext['downloading']
 			if os.path.exists(nm):
 				tsz=os.path.getsize(nm)
 				h['Range']='bytes='+str(tsz)+'-'
@@ -94,7 +113,7 @@ class nDown:
 			open(name,'wb').write(res.content)
 		if self.test7z:
 			od='7z t "'+name+'"'
-			odd=('move "'+name+'" "'+name+'.err_def"') if os.system(od) else ('echo \'\' > "'+name+'.sve_def"')
+			odd=('move "'+name+'" "'+name+ext['error']+'"') if os.system(od) else ('echo \'\' > "'+name+ext['finished']+'"')
 			os.system(odd)
 
 		return float(time.time())-a

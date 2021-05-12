@@ -1,4 +1,3 @@
-import queue
 import threading
 import time
 
@@ -13,7 +12,7 @@ def throws(f,args:tuple=tuple())->None:
 class nThread:
 	def __init__(
 		self,
-		n:int=20,
+		n:int=0,
 		waits:int=0,
 		f=None,
 		args:list=None,
@@ -21,19 +20,33 @@ class nThread:
 	):
 		self.__ed=False
 		self.__q=list()
-		self.__n=n
+		
+		self.__n=n if n else (len(args) if fast else 16)
+		self.__total=0
+		self.__finish=0
+		
 		self.__waits=waits
 		self.__mian=throws(self.__f)
 		if fast:
 			self.ths(f,args)
 			self.join()
 
-
 	def __repr__(self):
-		return '<class qThread with '+str(self.__n)+' threads and '+str(self.__waits)+' seconds wait time>'
+		return {
+			'classname':'nThread',
+			'waittime':self.__waits,
+			'total':self.__total,
+			'finished':self.__finish,
+			'limited':self.__n,
+			'running':min(self.__n,len(self.__q)),
+			'waiting':len(self.__q)-self.__n,
+		}
 
-	# def __del__(self):
-	# 	print('del this qThread, but '+str(self.__n)+'(or less) threads are running...')
+	def __str__(self):
+		return '<class nThread with '+str(self.__n)+' threads>'
+
+	def __del__(self):
+		print('del this class nThread; '+str(self.__finish)+'/'+str(self.__total)+' threads are finished')
 
 	def __f(self):
 		_l=list()
@@ -43,6 +56,7 @@ class nThread:
 			for i in _l.copy():
 				if not i.is_alive():
 					_l.remove(i)
+					self.__finish+=1
 			while len(self.__q)>0 and len(_l)<self.__n:
 				f,args=self.__q.pop(0)
 				if not isinstance(args,tuple):
@@ -52,15 +66,18 @@ class nThread:
 				_l.append(throws(f,args))
 	
 	def th(self,f,args:tuple=tuple()):
+		self.__total+=1
 		self.__q.append((f,args,))
 
-	def thl(self,args:list):
-		self.__q+=args
+	def thl(self,l:list):
+		self.__total+=len(l)
+		self.__q+=l
 
-	def ths(self,f,args:list):
-		if isinstance(args,int):
-			args=list(range(args))
-		self.__q+=[(f,i,) for i in args]
+	def ths(self,f,l:list):
+		if isinstance(l,int):
+			l=list(range(l))
+		self.__total+=len(l)
+		self.__q+=[(f,i,) for i in l]
 
 	def join(self):
 		self.__ed=True
